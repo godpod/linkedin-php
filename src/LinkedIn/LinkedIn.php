@@ -19,9 +19,10 @@ class LinkedIn
     const SCOPE_EMAIL_ADDRESS = 'r_emailaddress'; // The primary email address you use for your LinkedIn account
     const SCOPE_NETWORK = 'r_network'; // Your 1st and 2nd degree connections
     const SCOPE_CONTACT_INFO = 'r_contactinfo'; // Address, phone number, and bound accounts
-    const SCOPE_READ_WRTIE_UPDATES = 'rw_nus'; // Retrieve and post updates to LinkedIn as you
+    const SCOPE_READ_WRITE_UPDATES = 'rw_nus'; // Retrieve and post updates to LinkedIn as you
     const SCOPE_READ_WRITE_GROUPS = 'rw_groups'; // Retrieve and post group discussions as you
     const SCOPE_WRITE_MESSAGES = 'w_messages'; // Send messages and invitations to connect as you
+    const SCOPE_READ_WRITE_COMPANY_ADMIN = 'rw_company_admin'; // Edit company pages for which I am an Admin and post status updates on behalf of those companies
 
     const HTTP_METHOD_GET = 'GET';
     const HTTP_METHOD_POST = 'POST';
@@ -83,7 +84,7 @@ class LinkedIn
      * @param string $authorization_code
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @return string $access_token
+     * @return string|boolean $access_token
      */
     public function getAccessToken($authorization_code = null)
     {
@@ -107,12 +108,12 @@ class LinkedIn
         $tmp_params = http_build_query($params);
 
         $data = $this->_makeRequest(self::OAUTH_BASE . '/accessToken?' . $tmp_params, array(), self::HTTP_METHOD_POST, array('x-li-format: json'));
-        if (isset($data['error']) && !empty($data['error'])) {
-            throw new \RuntimeException('Access Token Request Error: ' . $data['error'] . ' -- ' . $data['error_description']);
+        if (isset($data->error) && !empty($data->error) && !empty($data->error_description)) {
+            throw new \RuntimeException('Access Token Request Error: ' . $data->error . ' -- ' . $data->error_description);
         }
 
-        $this->_access_token = $data['access_token'];
-        $this->_access_token_expires = $data['expires_in'];
+        $this->_access_token = $data->access_token;
+        $this->_access_token_expires = $data->expires_in;
 
         return $this->_access_token;
     }
@@ -182,9 +183,9 @@ class LinkedIn
      * @param array $payload
      * @return array
      */
-    public function post($endpoint, array $payload = array())
+    public function post($endpoint, $payload = array(), $headers = array(), $curl_options = array())
     {
-        return $this->fetch($endpoint, $payload, self::HTTP_METHOD_POST);
+        return $this->fetch($endpoint, $payload, self::HTTP_METHOD_POST, $headers, $curl_options);
     }
 
     /**
@@ -194,9 +195,9 @@ class LinkedIn
      * @param array $payload
      * @return array
      */
-    public function get($endpoint, array $payload = array())
+    public function get($endpoint, $payload = array(), $headers = array(), $curl_options = array())
     {
-        return $this->fetch($endpoint, $payload);
+        return $this->fetch($endpoint, $payload, self::HTTP_METHOD_GET, $headers, $curl_options);
     }
 
     /**
@@ -206,9 +207,9 @@ class LinkedIn
      * @param array $payload
      * @return array
      */
-    public function put($endpoint, array $payload = array())
+    public function put($endpoint, $payload = array(), $headers = array(), $curl_options = array())
     {
-        return $this->fetch($endpoint, $payload, self::HTTP_METHOD_PUT);
+        return $this->fetch($endpoint, $payload, self::HTTP_METHOD_PUT, $headers, $curl_options);
     }
 
     /**
@@ -223,7 +224,7 @@ class LinkedIn
      * @param array $curl_options
      * @return array
      */
-    public function fetch($endpoint, array $payload = array(), $method = 'GET', array $headers = array(), array $curl_options = array())
+    public function fetch($endpoint, $payload = array(), $method = 'GET', array $headers = array(), array $curl_options = array())
     {
         $endpoint = self::API_BASE . '/' . trim($endpoint, '/\\') . '?oauth2_access_token=' . $this->getAccessToken();
         $headers[] = 'x-li-format: json';
@@ -252,7 +253,7 @@ class LinkedIn
      * @throws \RuntimeException
      * @return array
      */
-    protected function _makeRequest($url, array $payload = array(), $method = 'GET', array $headers = array(), array $curl_options = array())
+    protected function _makeRequest($url, $payload = array(), $method = 'GET', array $headers = array(), array $curl_options = array())
     {
         $ch = $this->_getCurlHandle();
 
@@ -268,7 +269,11 @@ class LinkedIn
         if (!empty($payload)) {
             if ($options[CURLOPT_CUSTOMREQUEST] == self::HTTP_METHOD_POST || $options[CURLOPT_CUSTOMREQUEST] == self::HTTP_METHOD_PUT) {
                 $options[CURLOPT_POST] = true;
-                $options[CURLOPT_POSTFIELDS] = json_encode($payload);
+                if(is_array($payload))
+                    $options[CURLOPT_POSTFIELDS] = json_encode($payload);
+                else
+                    $options[CURLOPT_POSTFIELDS] = $payload;
+
                 $headers[] = 'Content-Length: ' . strlen($options[CURLOPT_POSTFIELDS]);
                 $headers[] = 'Content-Type: application/json';
                 $options[CURLOPT_HTTPHEADER] = $headers;
@@ -289,9 +294,9 @@ class LinkedIn
             throw new \RuntimeException('Request Error: ' . curl_error($ch));
         }
 
-        $response = json_decode($response, true);
-        if (isset($response['status']) && ($response['status'] < 200 || $response['status'] > 300)) {
-            throw new \RuntimeException('Request Error: ' . $response['message'] . '. Raw Response: ' . print_r($response, true));
+        $response = json_decode($response); //CHANGED to object
+        if (isset($response->status) && ($response->status < 200 || $response->status > 300)) {
+            throw new \RuntimeException(json_encode($response));
         }
 
         return $response;
