@@ -14,6 +14,8 @@ Here's a quick way to get started with this wrapper:
 
 Instantiate our class
 ```php
+use LinkedIn\LinkedIn;
+
 $li = new LinkedIn(
   array(
     'api_key' => 'yourapikey', 
