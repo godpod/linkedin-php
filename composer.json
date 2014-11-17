@@ -1,5 +1,5 @@
 {
-    "name": "projectrace/linkedin",
+    "name": "godpod/linkedin",
     "type": "library",
     "description": "PHP LinkedIn SDK",
     "keywords": ["linkedin","rest","api","api client"],
