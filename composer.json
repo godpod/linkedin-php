@@ -2,7 +2,7 @@
     "name": "godpod/linkedin",
     "type": "library",
     "description": "PHP LinkedIn SDK",
-    "keywords": ["linkedin","rest","api","api client"],
+    "keywords": ["linkedin","sdk","rest","api","api client"],
     "homepage": "https://github.com/godpod/linkedin-php",
     "license": "MIT",
     "authors": [
@@ -16,6 +16,6 @@
         "php": ">=5.3.0"
     },
     "autoload": {
-        "psr-0": { "LinkedIn\\": "src/LinkedIn/" }
+        "psr-4": { "LinkedIn\\": "src/LinkedIn/" }
     }
 }
