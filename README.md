@@ -1,7 +1,7 @@
 linkedin-php
 ============
 
-Linkedin PHP SDK
+Linkedin PHP SDK based on ashwinks/PHP-Linkedin-SDK
 
 PHP-LinkedIn-SDK
 ================
