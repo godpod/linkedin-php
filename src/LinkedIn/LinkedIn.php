@@ -14,7 +14,7 @@ class LinkedIn
     const API_BASE = 'https://api.linkedin.com/v2';
     const OAUTH_BASE = 'https://www.linkedin.com/oauth/v2';
 
-    const SCOPE_BASIC_PROFILE = 'r_basicprofile'; // Name, photo, headline, and current positions
+    const SCOPE_BASIC_PROFILE = 'r_liteprofile'; // Name, photo, headline, and current positions
     const SCOPE_FULL_PROFILE = 'r_fullprofile'; // @needApprovalFromLinkedin. Full profile including experience, education, skills, and recommendations
     const SCOPE_EMAIL_ADDRESS = 'r_emailaddress'; // The primary email address you use for your LinkedIn account
     const SCOPE_NETWORK = 'r_network'; // @deprecated. Your 1st and 2nd degree connections
