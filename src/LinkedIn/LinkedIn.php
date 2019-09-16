@@ -11,10 +11,10 @@ class LinkedIn
     private $_debug_info = null;
     private $_curl_handle = null;
 
-    const API_BASE = 'https://api.linkedin.com/v1';
-    const OAUTH_BASE = 'https://www.linkedin.com/uas/oauth2';
+    const API_BASE = 'https://api.linkedin.com/v2';
+    const OAUTH_BASE = 'https://www.linkedin.com/oauth/v2';
 
-    const SCOPE_BASIC_PROFILE = 'r_basicprofile'; // Name, photo, headline, and current positions
+    const SCOPE_BASIC_PROFILE = 'r_liteprofile'; // Name, photo, headline, and current positions
     const SCOPE_FULL_PROFILE = 'r_fullprofile'; // @needApprovalFromLinkedin. Full profile including experience, education, skills, and recommendations
     const SCOPE_EMAIL_ADDRESS = 'r_emailaddress'; // The primary email address you use for your LinkedIn account
     const SCOPE_NETWORK = 'r_network'; // @deprecated. Your 1st and 2nd degree connections
@@ -24,7 +24,7 @@ class LinkedIn
     const SCOPE_WRITE_MESSAGES = 'w_messages'; // @deprecated. Send messages and invitations to connect as you
     const SCOPE_READ_WRITE_COMPANY_ADMIN = 'rw_company_admin'; // Edit company pages for which I am an Admin and post status updates on behalf of those companies
 
-    const SCOPE_WRITE_SHARE = 'w_share'; // @NEW Post updates to LinkedIn as you. Replacement for 'rw_nus'
+    const SCOPE_WRITE_SHARE = 'w_member_social'; // @NEW Post updates to LinkedIn as you. Replacement for 'rw_nus'
 
     const HTTP_METHOD_GET = 'GET';
     const HTTP_METHOD_POST = 'POST';
